@@ -103,6 +103,23 @@ export default {
     RETURNING id, content, tags, user_id AS "userId", approach_count AS "approachCount", is_private AS "isPrivate", created_at AS "createdAt";
   `,
 
+  taskUpdate: `
+      UPDATE azdev.tasks 
+      SET 
+        content = COALESCE($3, content),
+        tags = COALESCE($4, tags),
+        is_private = COALESCE($5, is_private)
+      WHERE id = $1 AND user_id = $2
+      RETURNING
+        id,
+        content,
+        tags,
+        user_id AS "userId",
+        approach_count AS "approachCount",
+        is_private AS "isPrivate",
+        created_at AS "createdAt";
+  `,
+
   // $1: userId
   // $2: content
   // $3: taskId

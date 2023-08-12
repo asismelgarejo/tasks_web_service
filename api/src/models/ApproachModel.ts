@@ -1,5 +1,5 @@
 type ApproachModel = {
-  id: string;
+  id: number;
   content: string;
   userId: string;
   taskId: string;

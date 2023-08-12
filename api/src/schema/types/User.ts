@@ -45,7 +45,7 @@ const fieldsWrapper = ({
     usersFields.taskList = {
       type: new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(Task))),
       async resolve(_, __, { currentUser, loaders }): Promise<TaskModel[]> {
-        return loaders.tasksForUser.load(currentUser.id);
+        return loaders.tasksForUser.load(currentUser.id+"");
       },
     };
   }

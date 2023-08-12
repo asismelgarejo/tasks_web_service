@@ -76,6 +76,7 @@ async function main() {
 
     const mutators = {
       pgApi: pgApi.mutators,
+      mongoApi: mongoApi.mutators,
     };
 
     graphqlHTTP({
