@@ -1,5 +1,5 @@
 import pg from "pg";
-import PGAPIWrapper from "../db/pg-api";
+import PGAPIWrapper, { PGAPIWrapperMutations } from "../db/pg-api";
 import DataLoader from "dataloader";
 import UserModel from "./UserModel";
 import ApproachModel from "./ApproachModel";
@@ -11,6 +11,12 @@ export type TDataLoaders = {
   tasksByTypes: DataLoader<string, TaskModel[]>;
   searchResults: DataLoader<string, (TaskModel | ApproachModel)[]>;
   detailLists: DataLoader<any, any>;
+  tasksForUser: DataLoader<string, TaskModel[]>;
 };
 export type SourceCustom = { pgPool: pg.Pool };
-export type ContextCustom = { pgApi: PGAPIWrapper; loaders: TDataLoaders };
+export type ContextCustom = {
+  pgApi: PGAPIWrapper;
+  loaders: TDataLoaders;
+  mutators: { pgApi: PGAPIWrapperMutations };
+  currentUser: UserModel;
+};

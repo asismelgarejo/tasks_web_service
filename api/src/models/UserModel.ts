@@ -5,8 +5,8 @@ type UserModel = {
   username: string;
   firstName: string;
   lastName: string;
-  createdAt: Date;
-  tasksList: TaskModel[];
+  // createdAt: Date;
+  // tasksList: TaskModel[];
 };
 
 export default UserModel;

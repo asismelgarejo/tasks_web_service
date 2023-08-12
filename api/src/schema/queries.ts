@@ -9,42 +9,7 @@ import { ContextCustom, SourceCustom } from "../models";
 import Task from "./types/Task";
 import TaskModel from "../models/TaskModel";
 import SearchResultItem from "./types/search-result-item";
-
-// const currentTime: GraphQLFieldConfig<SourceCustom, ContextCustom> = {
-//         type: GraphQLString,
-//         resolve: () => {
-//           return new Promise((res) => {
-//             const isoString = new Date().toISOString();
-//             const date = isoString.slice(11, 19);
-//             setTimeout(() => res(date), 5000);
-//           });
-//         },
-//       };
-//       const sumNumbersInRange: GraphQLFieldConfig<
-//         SourceCustom,
-//         ContextCustom,
-//         {
-//           begin: number;
-//           end: number;
-//         }
-//       > = {
-//         type: new GraphQLNonNull(GraphQLInt),
-//         args: {
-//           begin: {
-//             type: new GraphQLNonNull(GraphQLInt),
-//           },
-//           end: {
-//             type: new GraphQLNonNull(GraphQLInt),
-//           },
-//         },
-//         resolve(source, { begin, end }, {}): number {
-//           let sum = 0;
-//           for (let index = begin; index < end; index++) {
-//             sum += index;
-//           }
-//           return sum;
-//         },
-//       };
+import User, { Me } from "./types/User";
 
 export const QueryType = new GraphQLObjectType<SourceCustom, ContextCustom>({
   name: "Query",
@@ -75,6 +40,12 @@ export const QueryType = new GraphQLObjectType<SourceCustom, ContextCustom>({
       },
       resolve(_, { term }, { loaders }) {
         return loaders.searchResults.load(term);
+      },
+    },
+    me: {
+      type: Me,
+      resolve(_, __, { currentUser }) {
+        return currentUser;
       },
     },
     // numbersInRange: {

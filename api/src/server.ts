@@ -37,7 +37,19 @@ async function main() {
   // });
 
   console.log(printSchema(schema));
-  server.use("/", (req, res) => {
+  server.use("/", async (req, res) => {
+    const authToken =
+      req && req.headers && req.headers.authorization
+        ? req.headers.authorization.slice(7)
+        : null;
+    const currentUser = await pgApi.mutators.userFromAuthToken(authToken ?? "");
+    if (authToken && !currentUser) {
+      res.status(401).send({
+        errors: [{ message: "Invalid access token" }],
+      });
+      return;
+    }
+
     const loaders: TDataLoaders = {
       users: new DataLoader<string, UserModel>((usersId) =>
         pgApi.userInfo(usersId)
@@ -45,23 +57,31 @@ async function main() {
       approaches: new DataLoader<string, ApproachModel[]>((tasksId) =>
         pgApi.approachList(tasksId)
       ),
-      tasks: new DataLoader<string, TaskModel>((taskId) =>
-        pgApi.tasksInfo(taskId)
+      tasks: new DataLoader<string, TaskModel>((tasksId) =>
+        pgApi.tasksInfo({ tasksId, currentUser })
       ),
       tasksByTypes: new DataLoader<string, TaskModel[]>((types) =>
         pgApi.taskMainList(types)
       ),
       searchResults: new DataLoader<string, (TaskModel | ApproachModel)[]>(
-        (term) => pgApi.searchResults(term)
+        (searchTerms) => pgApi.searchResults({ searchTerms, currentUser })
       ),
       detailLists: new DataLoader((approachIds) =>
         mongoApi.detailList(approachIds)
       ),
+      tasksForUser: new DataLoader<string, TaskModel[]>((userIds) =>
+        pgApi.tasksForUsers(userIds)
+      ),
     };
+
+    const mutators = {
+      pgApi: pgApi.mutators,
+    };
+
     graphqlHTTP({
       schema,
-      graphiql: true,
-      context: { pgApi, loaders },
+      graphiql: { headerEditorEnabled: true },
+      context: { pgApi, loaders, mutators, currentUser },
       customFormatErrorFn(err) {
         return err;
       },
